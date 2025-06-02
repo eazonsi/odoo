@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_form_custom" model="ir.ui.view">
+    <field name="name">hr.employee.form.custom</field>
+    <field name="model">hr.employee</field>
+    <field name="inherit_id" ref="hr.view_employee_form"/>
+    <field name="arch" type="xml">
+        <!-- Supprimer la page "Received Badges" de sa position actuelle -->
+        <xpath expr="//page[@name='received_badges']" position="replace"/>
+
+        <!-- Réinsérer la page "Received Badges" à la fin -->
+        <xpath expr="//page[@name='skills_resume']" position="after">
+            <page string="Received Badges" name="received_badges" invisible="not user_id">
+                <field name="has_badges" invisible="1" field_id="has_badges_0"/>
+                <button string="Grant a Badge" type="action" name="372"/> to reward this employee for a good action
+                <div class="o_field_nocontent mt-2" invisible="has_badges">
+                    <p>
+                        Grant this employee his first badge
+                    </p><p class="oe_grey">
+                        Badges are rewards of good work. Give them to people you believe deserve it.
+                    </p>
+                </div>
+                <div class="mt-2">
+                    <field name="badge_ids" mode="kanban" field_id="badge_ids_0">
+                        <kanban action="action_open_badge" type="object">
+                            <field name="badge_name"/>
+                            <field name="badge_id" on_change="1"/>
+                            <field name="user_id"/>
+                            <field name="comment"/>
+                            <field name="create_date"/>
+                            <templates>
+                                <t t-name="kanban-box">
+                                    <div class="oe_kanban_card oe_kanban_global_click oe_kanban_badge oe_kanban_color_white o_kanban_gamification">
+                                        <div class="o_kanban_content">
+                                            <div class="o_kanban_image">
+                                                <a type="open">
+                                                    <img t-att-src="kanban_image('gamification.badge', 'image_1024', record.badge_id.raw_value)" 
+                                                        t-att-title="record.badge_name.value" t-att-alt="record.badge_name.value"/></a>
+                                            </div>
+                                            <div class="oe_kanban_details">
+                                                <h4 class="mt0 mb0">
+                                                    <a class="o_kanban_record_title" type="open"><t t-esc="record.badge_name.raw_value"/></a>
+                                                </h4>
+                                                <t t-if="record.comment.raw_value">
+                                                    <p class="o_kanban_record_subtitle"><em><field name="comment"/></em></p>
+                                                </t>
+                                                <p>Granted by <a type="open"><field name="create_uid"/></a> 
+                                                    the <t t-esc="luxon.DateTime.fromISO(record.create_date.raw_value).toFormat('D')"/></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </templates>
+                        </kanban>
+                    </field>
+                </div>
+            </page>
+        </xpath>
+    </field>
+</record>
+
+    
+</odoo>
